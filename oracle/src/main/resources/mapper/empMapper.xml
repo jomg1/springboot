@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.emp.mapper.EmpMapper">
+	
+	<resultMap type="DeptVO" id="deptResult">
+		<collection property="emps" 
+					javaType="ArrayList" ofType="EmpVO"
+					column="department_id"
+					select="getEmpListVO"></collection>
+	</resultMap>
+	
+	<!-- 부서 전체 조회 -->
+	<select id="getDeptList" resultMap="deptResult">
+		select *
+		from departments d
+	</select>
+
+	<!-- 부서 단건 삭제 -->
+		<delete id="deptDelete" parameterType="deptVO">
+			DELETE FROM DEPARTMENTS
+			WHERE
+			<foreach collection="departmentIds" item="item"
+				open="department_id in(" separator="," close=")">
+				#{item}
+			</foreach>
+
+		</delete>
+
+		<select id="getEmpListVO" resultType="empVO"
+			parameterType="empVO">
+			SELECT *
+			FROM EMPLOYEES
+			<where>
+				<if test="departmentId != null and departmentId !=''.toString()">
+					and DEPARTMENT_ID = #{departmentId}
+				</if>
+				 <!-- and 뒤 한 글자라면 toString() 생략 가능, 따옴표 위치를 바꾸어도 가능. 세가지 경우가 있음. -->
+				<!--<if test="firstName != null and firstName !=''">
+					and first_name like '%${firstName}%'
+				</if> -->
+			</where>
+		</select>
+
+		<select id="getEmpList" resultType="map">
+			SELECT
+			EMPLOYEE_ID "employeeId",
+			FIRST_NAME "firstName",
+			LAST_NAME "lastName",
+			EMAIL "email",
+			PHONE_NUMBER,
+			HIRE_DATE,
+			JOB_ID,
+			SALARY,
+			COMMISSION_PCT,
+			MANAGER_ID,
+			DEPARTMENT_ID
+			FROM EMPLOYEES
+		</select>
+
+		<select id="getEmp" resultType="map" parameterType="int">
+			SELECT *
+			FROM
+			EMPLOYEES
+			WHERE EMPLOYEE_ID = #{value}
+		</select>
+
+</mapper>
