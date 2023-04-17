@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="successHandler" class="com.company.app.security.CustomLoginSuccessHandler"/>
+
+	<security:http pattern="/css/**" security="none" />
+	<security:http>
+		<security:intercept-url pattern="/top"
+			access="permitAll()" />
+		<security:intercept-url pattern="/login"
+			access="permitAll()" />
+		<security:intercept-url pattern="/admin/**"
+			access="hasAuthority('ROLE_ADMIN')" />
+		<security:intercept-url pattern="/**"
+			access="isAuthenticated()" />
+		<security:form-login login-page="/login"
+			username-parameter="userid" 
+			authentication-success-handler-ref="successHandler"/>
+		<security:logout logout-url="/logout"
+			logout-success-url="/top" />
+		<!-- <security:csrf disabled="false" /> --> <!-- 사용하지 않으려면 false, 또는 아예 작성하지 않음 -->
+	</security:http>
+	<security:authentication-manager>
+									<!-- @Service 뒤에 이름을 붙였으면 해당 이름으로 해도 됨 -->
+		<security:authentication-provider user-service-ref="userService">
+			<!-- <security:jdbc-user-service
+				data-source-ref="dataSource"
+				users-by-username-query="select LOGIN_ID, PASSWORD, 1
+ 						  from T_USER
+						  where LOGIN_ID = ?"
+				authorities-by-username-query="select LOGIN_ID, ROLE_NAME
+						  from T_ROLE
+						  inner join T_USER_ROLE on T_ROLE.ID = T_USER_ROLE.ROLE_ID
+						  inner join T_USER on T_USER_ROLE.USER_ID = T_USER.ID
+						  where LOGIN_ID = ?" /> -->
+			<security:password-encoder hash="bcrypt" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
