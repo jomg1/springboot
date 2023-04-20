@@ -34,7 +34,8 @@ public class BootsecApplication {
 	}
 	
 	@GetMapping("/user/user")
-	public String user(@AuthenticationPrincipal Principal uservo, HttpSession session) {
+	public String user(@AuthenticationPrincipal Principal uservo, 
+			HttpSession session) {
 		String sessionLoginId = (String)session.getAttribute("loginId");
 		System.out.println(sessionLoginId);
 		
@@ -42,7 +43,7 @@ public class BootsecApplication {
 				(UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		System.out.println(userDetails.getUsername());
 		
-		System.out.println(uservo.getName());//userid
+		//System.out.println(uservo.getName());//userid
 		return "user/user";
 	}
 	
